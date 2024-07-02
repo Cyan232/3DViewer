@@ -1,0 +1,26 @@
+const vertexShader = `
+    uniform mat4 observationViewMatrix;
+    uniform mat4 observationProjectionMatrix;
+    varying vec3 v_observationPosition;
+    void main()
+    {
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        // v_observationPosition = observationProjectionMatrix * observationViewMatrix * vec4(position, 1.0);
+    }
+`;
+
+const fragmentShader = `
+    uniform sampler2D observationTexture;
+    uniform float viewportWidth;
+    uniform float viewportHeight;
+    varying vec3 v_observationPosition;
+    void main()
+    {
+        // vec2 ndc = v_observationPosition.xy / v_observationPosition.w;
+        // vec2 screenPos = 0.5 * (ndc + 1.0) * vec2(viewportWidth, viewportHeight);
+        // screenPos.y = viewportHeight - screenPos.y;
+
+        gl_FragColor = texture2D(observationTexture, screenPos);
+        
+    }
+`

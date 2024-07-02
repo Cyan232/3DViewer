@@ -1,0 +1,18 @@
+{
+    "map": "observationMap.png",
+    "cameraPosition": {
+        "x": 0,
+        "y": 0,
+        "z": 5
+    },
+    "cameraRotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    },
+    "cameraFov": 60,
+    "cameraNear": 0.1,
+    "cameraFar": 1000,
+    "cameraWidth": 1920,
+    "cameraHeight": 1080
+}
