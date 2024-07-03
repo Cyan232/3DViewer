@@ -1,10 +1,11 @@
-import { setupRenderer, getRendererParams, addObservationToRenderer } from "./renderer";
+import { render } from "@testing-library/react";
+import { setupRenderer, getRendererParams, addObservationToRenderer, uploadSTL } from "./renderer";
 
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 let params;
 
-function handleFileUpload(event) {
+function handleObservationFileUpload(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
 
@@ -14,6 +15,19 @@ function handleFileUpload(event) {
     };
 
     reader.readAsText(file);
+}
+
+function handleModelFileUpload(event) {
+    uploadSTL(event.target.files[0]);
+    // const file = event.target.files[0];
+    // const reader = new FileReader();
+
+    // reader.onload = (e) => {
+    //     const data = JSON.parse(e.target.result);
+    //     addObservationToRenderer(data);
+    // };
+
+    // reader.readAsText(file);
 }
 
 function main() {
@@ -29,9 +43,16 @@ function main() {
     input.accept = '.json';
     input.style.display = 'none'; // Hide the input element
 
-    input.addEventListener('change', handleFileUpload);
+    const inputSTL = document.createElement('input');
+    inputSTL.type = 'file';
+    inputSTL.accept = '.stl';
+    inputSTL.style.display = 'none'; // Hide the input element
+
+    input.addEventListener('change', handleObservationFileUpload);
+    inputSTL.addEventListener('change', handleModelFileUpload);
 
     // Add upload button to GUI
+    gui.add({ upload: () => inputSTL.click() }, 'upload').name('Upload STL');
     gui.add({ upload: () => input.click() }, 'upload').name('Upload observations');
 
     gui.open();

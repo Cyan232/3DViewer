@@ -79,12 +79,12 @@ const planefragmentShader = `
     varying vec4 v_observationPosition;
 
     void main() {
-        vec2 newUv = vec2((v_observationPosition.x ), ( v_observationPosition.y));
+        vec2 newUv = v_observationPosition.xy / v_observationPosition.w;
+        
+        newUv.y = newUv.y / (2.0*viewportAspectRatio);
         newUv = newUv * 0.5 + 0.5;
 
-        // Output the color
         gl_FragColor = texture2D(observationTexture, newUv);
-        //gl_FragColor = vec4(newUv.xy, 0.0, 1.0);
     }
 `;
 
@@ -100,7 +100,7 @@ const heatMapUniforms = {
 const standardMaterial = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     metalness: 1.0,
-    roughness: 0.8
+    roughness: 0.5
 });
 
 const heatMapMaterial = new THREE.ShaderMaterial(
@@ -139,7 +139,11 @@ function getRendererParams() {
 function animate() {
     counter += 0.005;
 
-    //if (params.rotate) model.rotation.y += 0.01;
+    if (!model) return;
+
+    if (params.rotate) {
+        model.rotation.y = counter;
+    }
 
     if (params.heatMap) {
         currentMaterial = heatMapMaterial;
@@ -163,21 +167,6 @@ function setupRenderer() {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
-    const loader = new STLLoader()
-    loader.load(
-        'randomShape.stl',
-        function (geometry) {
-            model = new THREE.Mesh(geometry, currentMaterial);
-            scene.add(model)
-        },
-        (xhr) => {
-            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-        },
-        (error) => {
-            console.log(error)
-        }
-    )
 
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
@@ -285,5 +274,22 @@ function addObservationToRenderer(data) {
     planeMesh.rotation.set(rx, ry, rz);
 
 }
+
+function uploadSTL(path) {
+    const loader = new STLLoader()
+    loader.load(
+        'randomShape.stl',
+        function (geometry) {
+            model = new THREE.Mesh(geometry, currentMaterial);
+            scene.add(model)
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+        },
+        (error) => {
+            console.log(error)
+        }
+    )
+}
 // export default { setupRenderer, getRendererParams };
-export { setupRenderer, getRendererParams, addObservationToRenderer };
+export { setupRenderer, getRendererParams, addObservationToRenderer, uploadSTL };
